@@ -1,0 +1,42 @@
+{% extends 'Base.html' %}
+
+{% block title %}Home | Kidney Stone Detection{% endblock %}
+
+{% block contents %}
+<!-- Header Section for Home Page -->
+<header class="header">
+    <div class="container">
+        <h1>Welcome to Kidney Stone Detection</h1>
+        <p>Utilizing advanced deep learning models to assist in the diagnosis and detection of kidney stones.</p>
+        <a href="{% url 'UserRegisterActions' %}" class="btn btn-primary btn-lg mt-4">Get Started</a>
+    </div>
+</header>
+
+<!-- Features Section -->
+<section class="content-section">
+    <div class="container">
+        <h2>Why Choose Our Solution?</h2>
+        <p>
+            Our deep learning-powered kidney stone detection system ensures high accuracy, helping healthcare professionals detect kidney stones efficiently 
+            and provide better patient care.
+        </p>
+        <div class="row mt-5">
+            <div class="col-md-4">
+                <i class="fas fa-brain fa-3x mb-3"></i>
+                <h4>Advanced Deep Learning</h4>
+                <p>State-of-the-art deep learning models to enhance diagnostic precision.</p>
+            </div>
+            <div class="col-md-4">
+                <i class="fas fa-stethoscope fa-3x mb-3"></i>
+                <h4>Better Patient Outcomes</h4>
+                <p>Faster and more accurate diagnoses, improving patient outcomes and treatment plans.</p>
+            </div>
+            <div class="col-md-4">
+                <i class="fas fa-user-md fa-3x mb-3"></i>
+                <h4>Clinician-Friendly</h4>
+                <p>An intuitive interface that allows healthcare professionals to easily utilize the deep learning models.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

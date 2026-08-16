@@ -1,0 +1,130 @@
+{% extends 'users/UserBase.html' %}
+
+{% block title %}User Home - Kidney Stone Detection{% endblock %}
+
+{% block contents %}
+<div class="container">
+    <h1 class="text-center mt-4 text-info" data-aos="fade-down" data-aos-duration="1000">Welcome to the Kidney Stone Detection User Dashboard</h1>
+    <p class="text-center text-white" data-aos="fade-down" data-aos-duration="1200">Here, you can train the model, make predictions, and view results related to kidney stone detection.</p>
+
+    <!-- Section for Quick Actions -->
+    <div class="row mt-5">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0" data-aos="zoom-in" data-aos-duration="1000">
+                <div class="card-body text-center">
+                    <i class="fas fa-play-circle fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title text-primary">Start Training</h5>
+                    <p class="card-text text-dark">Train the deep learning model using the latest kidney stone imaging data.</p>
+                    <a href="{% url 'Training' %}" class="btn btn-outline-primary">Train Now</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0" data-aos="zoom-in" data-aos-duration="1200">
+                <div class="card-body text-center">
+                    <i class="fas fa-brain fa-3x text-warning mb-3"></i>
+                    <h5 class="card-title text-warning">Make Predictions</h5>
+                    <p class="card-text text-dark">Upload medical images and get predictions on the presence of kidney stones.</p>
+                    <a href="{% url 'prediction' %}" class="btn btn-outline-warning">Predict Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<!-- Adding AOS (Animate On Scroll) Library for animations -->
+<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+    AOS.init();
+</script>
+<style>
+    /* Container spacing */
+    .container {
+        margin-top: 50px;
+    }
+
+    /* Card hover effects */
+    .card {
+        background-color: #f9f9f9;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 15px;
+    }
+    .text-white {
+    color: #ffffff;
+    }
+    .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Button styles */
+    .btn-outline-primary {
+        border: 2px solid #007bff;
+        color: #007bff;
+        font-weight: 600;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    .btn-outline-warning {
+        border: 2px solid #ffc107;
+        color: #ffc107;
+        font-weight: 600;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .btn-outline-warning:hover {
+        background-color: #ffc107;
+        color: #fff;
+    }
+
+    /* Card title color on hover */
+    .card:hover .card-title {
+        color: #ffc107; /* Icon color change on hover */
+    }
+
+    /* Card icon animation */
+    .card .fas {
+        transition: color 0.3s ease, transform 0.3s ease;
+    }
+
+    .card:hover .fas {
+        color: #17a2b8; /* Change icon color */
+        transform: scale(1.1); /* Slightly scale up icon */
+    }
+
+    /* Text styling */
+    h1 {
+        font-family: 'Roboto', sans-serif;
+        font-weight: bold;
+    }
+
+    p {
+        font-family: 'Open Sans', sans-serif;
+        font-size: 1.1em;
+    }
+
+    /* Animation for fade-in effect */
+    h1, p {
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}

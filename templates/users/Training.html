@@ -1,0 +1,137 @@
+{% extends 'users/UserBase.html' %} {% load static %} {% block title %}Model
+Training - Kidney Stone Detection{% endblock title %} {% block contents %}
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h2 class="text-center mb-0">Model Training</h2>
+        </div>
+        <div class="card-body">
+          {% if training_complete %}
+          <div class="alert alert-success fade-in">
+            <h4 class="alert-heading mb-4">Training Completed Successfully!</h4>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="metric-box">
+                  <h5>Training Accuracy</h5>
+                  <p class="h3 text-primary">{{ train_accuracy }}</p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="metric-box">
+                  <h5>Validation Accuracy</h5>
+                  <p class="h3 text-success">{{ val_accuracy }}</p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="metric-box">
+                  <h5>Training Loss</h5>
+                  <p class="h3 text-info">{{ train_loss }}</p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="metric-box">
+                  <h5>Validation Loss</h5>
+                  <p class="h3 text-warning">{{ val_loss }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="text-center mt-4">
+            <a href="{% url 'Training' %}" class="btn btn-primary btn-lg"
+              >Train Again</a
+            >
+            <a href="{% url 'prediction' %}" class="btn btn-success btn-lg ms-3"
+              >Make Prediction</a
+            >
+          </div>
+          {% else %} {% if error %}
+          <div class="alert alert-danger fade-in">
+            <h4 class="alert-heading">Training Error</h4>
+            <p>{{ error }}</p>
+          </div>
+          {% endif %}
+          <div class="text-center mt-4">
+            <form method="POST">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-primary btn-lg">
+                Start Training
+              </button>
+            </form>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .metric-box {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+
+  .metric-box:hover {
+    transform: translateY(-5px);
+  }
+
+  .metric-box h5 {
+    color: #6c757d;
+    margin-bottom: 15px;
+    font-weight: 600;
+  }
+
+  .metric-box p {
+    margin-bottom: 0;
+    font-weight: bold;
+  }
+
+  .fade-in {
+    animation: fadeIn 0.5s ease-in;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .btn {
+    transition: all 0.3s ease;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .card {
+    background-color: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    border-bottom: none;
+    padding: 1.5rem;
+  }
+
+  .alert {
+    border-radius: 10px;
+    border: none;
+  }
+</style>
+{% endblock contents %}

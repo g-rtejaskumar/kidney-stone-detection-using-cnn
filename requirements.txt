@@ -1,0 +1,9 @@
+Django
+gunicorn
+whitenoise
+dj-database-url
+psycopg2-binary
+tensorflow
+numpy
+Pillow
+scikit-learn

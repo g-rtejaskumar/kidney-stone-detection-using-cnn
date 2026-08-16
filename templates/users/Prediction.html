@@ -1,0 +1,95 @@
+{% extends 'users/UserBase.html' %}
+
+{% block title %}Kidney Stone Prediction{% endblock %}
+
+{% block contents %}
+    <div class="container mt-5">
+        <div class="card shadow-lg p-4">
+            <h1 class="text-center mb-4 text-primary">Kidney Stone Prediction</h1>
+            
+            <!-- Form Section -->
+            <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="image" class="form-label">Upload Kidney X-Ray Image:</label>
+                    <input type="file" class="form-control" name="image" id="image" required>
+                    <div class="invalid-feedback">
+                        Please upload an image for prediction.
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-outline-primary btn-block mt-4">Predict Now</button>
+            </form>
+
+            <!-- Result Section -->
+            {% if result %}
+                <div class="mt-5 text-center alert alert-success fade-in">
+                    <h3 class="font-weight-bold">Prediction Result:</h3>
+                    <p class="lead">{{ result }}</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block styles %}
+    <style>
+        /* Card style */
+        .card {
+            background-color:rgba(95, 158, 160, 0.648);
+            border-radius: 15px;
+            border: none;
+            padding: 20px;
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: scale(1.03);
+        }
+
+        /* Title */
+        h1 {
+            font-family: 'Roboto', sans-serif;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+        }
+
+        /* Button hover effect */
+        button {
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #007bff;
+            transform: translateY(-2px);
+        }
+
+        /* Alert animation */
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Form input */
+        .form-control {
+            border-radius: 10px;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        /* Container */
+        .container {
+            max-width: 500px;
+        }
+    </style>
+{% endblock %}
