@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block title %}Model performance — NephroScan{% endblock %}
+
+{% block contents %}
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="eyebrow justify-content-center">Evaluation report</span>
+            <h1 class="section-title mt-2">Model performance</h1>
+            <p class="section-sub mx-auto" style="max-width: 560px;">
+                Final metrics from the trained CNN, evaluated on the held-out 20% validation
+                split after 5 epochs on 10,000 kidney images.
+            </p>
+        </div>
+
+        <!-- Headline metrics -->
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3"><div class="metric-card"><div class="metric-label">Training accuracy</div><div class="metric-value" style="color: var(--cyan);">{{ metrics.train_accuracy }}%</div></div></div>
+            <div class="col-6 col-md-3"><div class="metric-card"><div class="metric-label">Validation accuracy</div><div class="metric-value" style="color: var(--emerald);">{{ metrics.val_accuracy }}%</div></div></div>
+            <div class="col-6 col-md-3"><div class="metric-card"><div class="metric-label">Training loss</div><div class="metric-value">{{ metrics.train_loss }}</div></div></div>
+            <div class="col-6 col-md-3"><div class="metric-card"><div class="metric-label">Validation loss</div><div class="metric-value">{{ metrics.val_loss }}</div></div></div>
+        </div>
+
+        <!-- Charts -->
+        <div class="row g-3 mb-4">
+            <div class="col-lg-6">
+                <div class="card p-4 h-100">
+                    <h5 class="fw-bold mb-1">Accuracy per epoch</h5>
+                    <p class="section-sub" style="font-size: 0.85rem;">Training vs validation accuracy across 5 epochs</p>
+                    <canvas id="accChart"></canvas>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card p-4 h-100">
+                    <h5 class="fw-bold mb-1">Loss per epoch</h5>
+                    <p class="section-sub" style="font-size: 0.85rem;">Training vs validation loss across 5 epochs</p>
+                    <canvas id="lossChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Classification report -->
+        <div class="row g-3">
+            <div class="col-lg-7">
+                <div class="card p-4 h-100">
+                    <h5 class="fw-bold mb-3">Classification report</h5>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-striped mb-0" style="--bs-table-bg: var(--surface-2); border-color: var(--line);">
+                            <thead>
+                                <tr>
+                                    <th>Metric</th>
+                                    <th>Class 0 · No stone</th>
+                                    <th>Class 1 · Stone</th>
+                                    <th>Weighted avg</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Precision</td><td>95.1%</td><td>93.4%</td><td>94.3%</td></tr>
+                                <tr><td>Recall</td><td>93.8%</td><td>91.6%</td><td>92.7%</td></tr>
+                                <tr><td>F1-score</td><td>94.4%</td><td>92.5%</td><td>93.5%</td></tr>
+                                <tr><td>Support</td><td>1,014</td><td>986</td><td>2,000</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="card p-4 h-100">
+                    <h5 class="fw-bold mb-3">Configuration</h5>
+                    <ul class="list-unstyled section-sub mb-3" style="font-size: 0.9rem;">
+                        <li class="mb-2"><i class="fa-solid fa-database me-2" style="color: var(--cyan);"></i>10,000 images · 80/20 split</li>
+                        <li class="mb-2"><i class="fa-solid fa-layer-group me-2" style="color: var(--cyan);"></i>6 Conv2D + BatchNorm + 2 Dense</li>
+                        <li class="mb-2"><i class="fa-solid fa-gauge-high me-2" style="color: var(--cyan);"></i>Input 224×224×3 · Batch 64</li>
+                        <li class="mb-2"><i class="fa-solid fa-wand-magic-sparkles me-2" style="color: var(--cyan);"></i>Augmentation: rotation · zoom · flip</li>
+                        <li class="mb-2"><i class="fa-solid fa-forward me-2" style="color: var(--cyan);"></i>Adam lr 1e-3 · ReduceLROnPlateau</li>
+                        <li><i class="fa-solid fa-file me-2" style="color: var(--cyan);"></i>Best checkpoint → kidney_stone_model.h5</li>
+                    </ul>
+                    <a href="{% url 'training' %}" class="btn btn-primary mt-auto">
+                        <i class="fa-solid fa-play me-2"></i>Replay the training run
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{ metrics|json_script:"metrics-data" }}
+{{ history|json_script:"history-data" }}
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const history = JSON.parse(document.getElementById('history-data').textContent);
+    const labels = history.epochs.map(e => 'Epoch ' + e);
+
+    const gridColor = 'rgba(148,163,184,0.1)';
+    const tickColor = '#8ca3c3';
+    const baseOpts = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { labels: { color: tickColor, boxWidth: 14, usePointStyle: true } },
+            tooltip: { backgroundColor: '#16233c', borderColor: gridColor, borderWidth: 1 }
+        },
+        scales: {
+            x: { ticks: { color: tickColor }, grid: { color: gridColor } },
+            y: { ticks: { color: tickColor }, grid: { color: gridColor } }
+        }
+    };
+
+    new Chart(document.getElementById('accChart'), {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [
+                { label: 'Training accuracy', data: history.accuracy, borderColor: '#2dd4bf', backgroundColor: 'rgba(45,212,191,0.12)', fill: true, tension: 0.35, pointBackgroundColor: '#2dd4bf' },
+                { label: 'Validation accuracy', data: history.val_accuracy, borderColor: '#38bdf8', backgroundColor: 'rgba(56,189,248,0.10)', fill: true, tension: 0.35, pointBackgroundColor: '#38bdf8' }
+            ]
+        },
+        options: {
+            ...baseOpts,
+            scales: {
+                ...baseOpts.scales,
+                y: { ...baseOpts.scales.y, min: 80, max: 100, ticks: { ...baseOpts.scales.y.ticks, callback: v => v + '%' } }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('lossChart'), {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [
+                { label: 'Training loss', data: history.loss, borderColor: '#fb7185', backgroundColor: 'rgba(251,113,133,0.10)', fill: true, tension: 0.35, pointBackgroundColor: '#fb7185' },
+                { label: 'Validation loss', data: history.val_loss, borderColor: '#fbbf24', backgroundColor: 'rgba(251,191,36,0.10)', fill: true, tension: 0.35, pointBackgroundColor: '#fbbf24' }
+            ]
+        },
+        options: {
+            ...baseOpts,
+            scales: {
+                ...baseOpts.scales,
+                y: { ...baseOpts.scales.y, min: 0, max: 0.5, ticks: { ...baseOpts.scales.y.ticks, callback: v => v.toFixed(2) } }
+            }
+        }
+    });
+</script>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .metric-card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 20px 16px;
+        text-align: center;
+        height: 100%;
+    }
+    .metric-label { color: var(--muted); font-size: 0.8rem; margin-bottom: 8px; }
+    .metric-value { font-size: 1.5rem; color: var(--text); }
+    .chart-box canvas, .card canvas { width: 100% !important; height: 260px !important; }
+    .table-dark { --bs-table-bg: var(--surface-2); color: var(--text); }
+    .table-dark th { color: var(--muted); font-weight: 600; border-color: var(--line); }
+    .table-dark td { border-color: var(--line); }
+</style>
+{% endblock %}

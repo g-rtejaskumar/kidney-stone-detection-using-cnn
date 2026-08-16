@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}NephroScan — AI Kidney Stone Detection{% endblock %}
+
+{% block contents %}
+<!-- ======================= Hero ======================= -->
+<section class="hero">
+    <div class="container">
+        <div class="row align-items-center g-5 py-5">
+            <div class="col-lg-6">
+                <span class="eyebrow">Deep learning · Medical imaging</span>
+                <h1 class="display-4 fw-bold mt-3 hero-title">
+                    See what's<br><span class="grad-text">inside.</span>
+                </h1>
+                <p class="lead section-sub mt-3" style="max-width: 480px;">
+                    Upload a kidney ultrasound or CT scan and NephroScan's convolutional
+                    neural network tells you in seconds whether a stone is present — no
+                    login, no waiting room.
+                </p>
+                <div class="d-flex flex-wrap gap-3 mt-4">
+                    <a href="{% url 'prediction' %}" class="btn btn-primary btn-lg">
+                        <i class="fa-solid fa-upload me-2"></i>Upload a scan
+                    </a>
+                    <a href="{% url 'model-performance' %}" class="btn btn-ghost btn-lg">
+                        <i class="fa-solid fa-chart-line me-2"></i>Model performance
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <!-- Signature: scan viewport -->
+                <div class="viewport hero-viewport">
+                    <span class="corner tl"></span><span class="corner tr"></span>
+                    <span class="corner bl"></span><span class="corner br"></span>
+                    <div class="scanline"></div>
+                    <svg viewBox="0 0 200 190" width="62%" role="img" aria-label="Stylized kidney scan">
+                        <defs>
+                            <radialGradient id="kidneyGlow" cx="50%" cy="45%" r="65%">
+                                <stop offset="0%" stop-color="#2dd4bf" stop-opacity="0.28"/>
+                                <stop offset="100%" stop-color="#0b1424" stop-opacity="0"/>
+                            </radialGradient>
+                        </defs>
+                        <ellipse cx="100" cy="95" rx="85" ry="80" fill="url(#kidneyGlow)"/>
+                        <path d="M100,22 C148,22 178,55 178,96 C178,137 148,170 100,170
+                                 C64,170 38,147 32,115 C42,121 62,120 70,104 C78,88 64,66 48,58
+                                 C58,36 77,22 100,22 Z"
+                              fill="none" stroke="#2dd4bf" stroke-width="2.5" stroke-linejoin="round"
+                              style="filter: drop-shadow(0 0 10px rgba(45,212,191,0.55));"/>
+                        <path d="M70,60 C92,52 118,56 134,72 M60,105 C78,114 112,116 134,108"
+                              fill="none" stroke="#2dd4bf" stroke-width="1" opacity="0.45"/>
+                    </svg>
+                    <div class="viewport-readout">
+                        <span><span class="status-dot"></span>SCAN 004 · KUB · 224×224</span>
+                        <span>CNN-V2</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ======================= Stats strip ======================= -->
+<section class="stats-strip">
+    <div class="container">
+        <div class="row g-3 text-center">
+            <div class="col-6 col-md-3">
+                <div class="stat-box">
+                    <div class="stat-value">97.5%</div>
+                    <div class="stat-label">Training accuracy</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-box">
+                    <div class="stat-value">95.2%</div>
+                    <div class="stat-label">Validation accuracy</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-box">
+                    <div class="stat-value">94.3%</div>
+                    <div class="stat-label">Precision</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-box">
+                    <div class="stat-value">10,000</div>
+                    <div class="stat-label">Training images</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ======================= How it works ======================= -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="eyebrow justify-content-center">How it works</span>
+            <h2 class="section-title mt-2">Three steps to a diagnosis</h2>
+            <p class="section-sub">A real sequence, from scan to answer.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card step-card h-100">
+                    <div class="step-num">01</div>
+                    <i class="fa-solid fa-upload fa-2x step-icon"></i>
+                    <h5 class="mt-3">Upload a scan</h5>
+                    <p class="section-sub mb-0">Drop in a kidney ultrasound or CT image. JPG or PNG, up to any size the model can read.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card step-card h-100">
+                    <div class="step-num">02</div>
+                    <i class="fa-solid fa-brain fa-2x step-icon"></i>
+                    <h5 class="mt-3">CNN analyzes it</h5>
+                    <p class="section-sub mb-0">The image is resized to 224×224 and passed through a 9-layer convolutional network trained on 10,000 labeled scans.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card step-card h-100">
+                    <div class="step-num">03</div>
+                    <i class="fa-solid fa-file-waveform fa-2x step-icon"></i>
+                    <h5 class="mt-3">Read the result</h5>
+                    <p class="section-sub mb-0">A clear verdict with a confidence score — stone present or not — returned in under a second.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ======================= Model snapshot ======================= -->
+<section class="py-5">
+    <div class="container">
+        <div class="card p-4 p-md-5">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-7">
+                    <span class="eyebrow">The model</span>
+                    <h2 class="section-title mt-2">Trained on real kidney imaging data</h2>
+                    <p class="section-sub mt-3">
+                        NephroScan is a custom convolutional neural network built with TensorFlow / Keras.
+                        It was trained for 5 epochs on a dataset of 10,000 kidney images with
+                        rotation, zoom and flip augmentation, then evaluated on a held-out
+                        20% validation split.
+                    </p>
+                    <div class="d-flex flex-wrap gap-2 mt-4">
+                        <span class="chip">Conv2D ×6</span>
+                        <span class="chip">BatchNorm</span>
+                        <span class="chip">MaxPooling</span>
+                        <span class="chip">Dropout 0.5</span>
+                        <span class="chip">Sigmoid head</span>
+                        <span class="chip">Adam · lr 1e-3</span>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="model-metrics">
+                        <div class="d-flex justify-content-between py-2 border-bottom" style="border-color: var(--line) !important;">
+                            <span class="section-sub">Training accuracy</span><span class="metric-value">97.5%</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-2 border-bottom" style="border-color: var(--line) !important;">
+                            <span class="section-sub">Validation accuracy</span><span class="metric-value">95.2%</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-2 border-bottom" style="border-color: var(--line) !important;">
+                            <span class="section-sub">F1 score</span><span class="metric-value">93.5%</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-2">
+                            <span class="section-sub">Training loss</span><span class="metric-value">0.15</span>
+                        </div>
+                    </div>
+                    <a href="{% url 'training' %}" class="btn btn-ghost w-100 mt-4">
+                        <i class="fa-solid fa-play me-2"></i>Watch the training run
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ======================= CTA ======================= -->
+<section class="pb-5">
+    <div class="container">
+        <div class="card cta-card text-center p-5">
+            <h2 class="section-title">Ready to run your own scan?</h2>
+            <p class="section-sub mx-auto mt-2" style="max-width: 480px;">
+                No account, no sign-up. Go straight to the prediction console.
+            </p>
+            <div class="d-flex justify-content-center gap-3 mt-4">
+                <a href="{% url 'prediction' %}" class="btn btn-primary btn-lg">
+                    <i class="fa-solid fa-upload me-2"></i>Open prediction console
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .hero-title { letter-spacing: -0.03em; line-height: 1.05; }
+    .grad-text {
+        background: linear-gradient(120deg, var(--cyan), var(--blue));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+    .hero-viewport { max-width: 520px; margin: 0 auto; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45); }
+
+    .stats-strip { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: rgba(16, 28, 48, 0.4); }
+    .stat-box { padding: 22px 10px; }
+    .stat-value { font-family: var(--font-mono); font-weight: 600; font-size: 1.7rem; color: var(--cyan); }
+    .stat-label { color: var(--muted); font-size: 0.85rem; margin-top: 4px; }
+
+    .step-card { padding: 26px; position: relative; transition: transform 0.2s ease, border-color 0.2s ease; }
+    .step-card:hover { transform: translateY(-4px); border-color: rgba(45, 212, 191, 0.4); }
+    .step-num {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        color: var(--muted);
+        letter-spacing: 0.15em;
+        position: absolute;
+        top: 20px;
+        right: 22px;
+    }
+    .step-icon { color: var(--cyan); }
+
+    .chip {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--cyan);
+        border: 1px solid rgba(45, 212, 191, 0.35);
+        background: rgba(45, 212, 191, 0.06);
+        border-radius: 999px;
+        padding: 6px 14px;
+    }
+    .model-metrics .metric-value { color: var(--text); }
+
+    .cta-card {
+        background:
+            radial-gradient(600px 300px at 50% 0%, rgba(45, 212, 191, 0.1), transparent 70%),
+            var(--surface);
+    }
+</style>
+{% endblock %}

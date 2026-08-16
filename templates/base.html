@@ -1,0 +1,295 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NephroScan — AI Kidney Stone Detection{% endblock %}</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap + Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #070d1a;
+            --bg-2: #0b1424;
+            --surface: #101c30;
+            --surface-2: #16233c;
+            --line: rgba(148, 163, 184, 0.14);
+            --cyan: #2dd4bf;
+            --blue: #38bdf8;
+            --emerald: #34d399;
+            --rose: #fb7185;
+            --amber: #fbbf24;
+            --text: #e6edf7;
+            --muted: #8ca3c3;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--text);
+            background:
+                radial-gradient(1100px 560px at 85% -10%, rgba(45, 212, 191, 0.09), transparent 60%),
+                radial-gradient(900px 480px at -10% 25%, rgba(56, 189, 248, 0.07), transparent 60%),
+                var(--bg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a { color: var(--cyan); }
+        a:hover { color: #5eead4; }
+
+        /* ---------- Navbar ---------- */
+        .site-nav {
+            background: rgba(7, 13, 26, 0.72);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--line);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .site-nav .navbar-brand {
+            font-family: var(--font-display);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .brand-mark {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, var(--cyan), var(--blue));
+            color: #04211d;
+            font-size: 14px;
+            box-shadow: 0 0 18px rgba(45, 212, 191, 0.45);
+        }
+        .site-nav .nav-link {
+            color: var(--muted);
+            font-weight: 500;
+            font-size: 0.92rem;
+            padding: 8px 14px !important;
+            border-radius: 8px;
+            transition: color 0.2s ease, background 0.2s ease;
+        }
+        .site-nav .nav-link:hover { color: var(--text); background: rgba(148, 163, 184, 0.08); }
+        .site-nav .nav-link.active {
+            color: var(--cyan);
+            background: rgba(45, 212, 191, 0.08);
+        }
+        .nav-cta {
+            color: #04211d !important;
+            background: linear-gradient(135deg, var(--cyan), #2ab8c9);
+            font-weight: 600 !important;
+            margin-left: 8px;
+            box-shadow: 0 0 20px rgba(45, 212, 191, 0.25);
+        }
+        .nav-cta:hover { color: #04211d !important; filter: brightness(1.08); }
+
+        /* ---------- Shared layout ---------- */
+        .page { flex: 1; width: 100%; }
+
+        .eyebrow {
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--cyan);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .eyebrow::before {
+            content: '';
+            width: 28px;
+            height: 1px;
+            background: var(--cyan);
+            opacity: 0.7;
+        }
+
+        h1, h2, h3, .display-font { font-family: var(--font-display); }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn {
+            border-radius: 10px;
+            font-weight: 600;
+            padding: 10px 22px;
+            transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--cyan), #2ab8c9);
+            border: none;
+            color: #04211d;
+            box-shadow: 0 6px 22px rgba(45, 212, 191, 0.28);
+        }
+        .btn-primary:hover { color: #04211d; filter: brightness(1.07); box-shadow: 0 8px 26px rgba(45, 212, 191, 0.38); }
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid var(--line);
+            color: var(--text);
+        }
+        .btn-ghost:hover { border-color: rgba(45, 212, 191, 0.6); color: var(--cyan); }
+        .btn:disabled { opacity: 0.6; transform: none; }
+
+        .section-title { font-weight: 700; letter-spacing: -0.02em; }
+        .section-sub { color: var(--muted); }
+
+        .metric-value { font-family: var(--font-mono); font-weight: 600; }
+
+        /* ---------- Scan viewport (signature element) ---------- */
+        .viewport {
+            position: relative;
+            background: #050a14;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            overflow: hidden;
+            aspect-ratio: 1 / 0.86;
+            display: grid;
+            place-items: center;
+        }
+        .viewport::before {   /* faint grid */
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(45, 212, 191, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(45, 212, 191, 0.05) 1px, transparent 1px);
+            background-size: 32px 32px;
+            pointer-events: none;
+        }
+        .corner { position: absolute; width: 22px; height: 22px; border: 2px solid rgba(45, 212, 191, 0.55); z-index: 3; }
+        .corner.tl { top: 14px; left: 14px; border-right: none; border-bottom: none; border-radius: 4px 0 0 0; }
+        .corner.tr { top: 14px; right: 14px; border-left: none; border-bottom: none; border-radius: 0 4px 0 0; }
+        .corner.bl { bottom: 14px; left: 14px; border-right: none; border-top: none; border-radius: 0 0 0 4px; }
+        .corner.br { bottom: 14px; right: 14px; border-left: none; border-top: none; border-radius: 0 0 4px 0; }
+
+        .scanline {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(45, 212, 191, 0.85), transparent);
+            box-shadow: 0 0 14px rgba(45, 212, 191, 0.6);
+            z-index: 2;
+            animation: scan 4.2s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes scan {
+            0%   { top: 4%; opacity: 0; }
+            8%   { opacity: 1; }
+            92%  { opacity: 1; }
+            100% { top: 96%; opacity: 0; }
+        }
+
+        .viewport-readout {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 16px;
+            background: rgba(5, 10, 20, 0.85);
+            border-top: 1px solid var(--line);
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--muted);
+            letter-spacing: 0.08em;
+            z-index: 3;
+        }
+        .status-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--emerald);
+            box-shadow: 0 0 8px var(--emerald);
+            display: inline-block;
+            margin-right: 6px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+        /* ---------- Footer ---------- */
+        .site-footer {
+            border-top: 1px solid var(--line);
+            padding: 28px 0;
+            color: var(--muted);
+            font-size: 0.88rem;
+        }
+        .site-footer .brand { font-family: var(--font-display); font-weight: 700; color: var(--text); }
+
+        ::selection { background: rgba(45, 212, 191, 0.3); }
+        :focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .scanline, .status-dot { animation: none; }
+            * { transition-duration: 0.01ms !important; }
+        }
+    </style>
+    {% block styles %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg site-nav">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <span class="brand-mark"><i class="fa-solid fa-wave-square"></i></span>
+                NephroScan
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain"
+                    aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navMain">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
+                    <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'prediction' %}active{% endif %}" href="{% url 'prediction' %}">Predict</a></li>
+                    <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'training' %}active{% endif %}" href="{% url 'training' %}">Train model</a></li>
+                    <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'model-performance' %}active{% endif %}" href="{% url 'model-performance' %}">Performance</a></li>
+                    <li class="nav-item"><a class="nav-link nav-cta" href="{% url 'prediction' %}">Upload a scan</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="page">
+        {% block contents %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+            <span><span class="brand">NephroScan</span> &nbsp;·&nbsp; AI kidney stone detection</span>
+            <span class="d-flex gap-4 align-items-center">
+                <span><i class="fa-solid fa-brain me-1"></i> CNN on 10k scans</span>
+                <span><i class="fa-solid fa-database me-1"></i> 97.5% train accuracy</span>
+                <span>© 2024 · Academic demo</span>
+            </span>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>
