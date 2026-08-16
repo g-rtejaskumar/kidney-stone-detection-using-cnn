@@ -16,3 +16,6 @@ media/archive (2)/dataset/
 # Project backup
 KSD.zip
 .git_old_backup/
+
+# Generated static files (created by collectstatic)
+staticfiles/

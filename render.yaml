@@ -1,0 +1,17 @@
+# Render blueprint — deploy by importing this repo in the Render dashboard
+# (New > Blueprint > select this repo > Apply). Everything below is pre-filled.
+services:
+  - type: web
+    name: kidney-stone-detection
+    runtime: python
+    plan: free
+    autoDeploy: true
+    buildCommand: ./build.sh
+    startCommand: gunicorn KSD.wsgi:application --timeout 120 --workers 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10
+      - key: DEBUG
+        value: "false"
+      - key: SECRET_KEY
+        generateValue: true

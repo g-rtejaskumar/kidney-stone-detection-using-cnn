@@ -30,14 +30,17 @@ Live demo deployed on Render: `https://kidney-stone-detection-l1n2.onrender.com`
 
 ## Stack
 
-- Django 5 + SQLite (`dj-database-url` for Postgres on Render)
-- TensorFlow / Keras CNN — 6 Conv2D blocks + BatchNorm + Dropout, input 224×224×3,
-  trained for 5 epochs on 10,000 kidney images (20% validation split)
+- Django 6 + SQLite (`dj-database-url` for Postgres on Render)
+- CNN — 6 Conv2D blocks + BatchNorm + Dropout, input 224×224×3, trained for 5 epochs
+  on 10,000 kidney images (20% validation split)
+- Inference runs the model as **TF-Lite** (`kidney_stone_model.tflite`, 45 MB) through
+  the lightweight **LiteRT** runtime (`ai-edge-litert`, ~18 MB) instead of full
+  TensorFlow — peak memory ~130 MB, so it fits Render's free 512 MB tier
 - Bootstrap 5 + Chart.js, dark "radiology suite" UI
 - Gunicorn + WhiteNoise for production
 
-The model (`kidney_stone_model.h5`) is committed and loaded lazily on the first
-prediction so the app boots quickly and does not hold TensorFlow in memory at startup.
+Recreate the .tflite from the .h5 at any time with `python tools/convert_model.py`
+(local TensorFlow only — it is not a deployment dependency).
 
 ## Run locally
 
@@ -53,15 +56,31 @@ Open http://127.0.0.1:8000
 
 ## Deploy to Render
 
-1. Push this repository to GitHub/GitLab.
-2. In Render, create a **Web Service** pointing at the repo.
-3. Build command: `./build.sh` (installs deps, collects static files, migrates).
-4. Start command: `gunicorn KSD.wsgi:application`
-5. Runtime is pinned to Python 3.12 in `runtime.txt`. Set `DEBUG=false` via the
-   `DEBUG` environment variable; the service host is already in `ALLOWED_HOSTS`.
+The repo ships with a **Render blueprint** (`render.yaml`), so deployment is a
+one-click import:
 
-> Note: Render's free tier has ~512 MB RAM. The TensorFlow import happens only when a
-> prediction is first made (lazy loading), so the site itself stays light.
+1. Push this repository to GitHub.
+2. Go to [render.com](https://render.com) → **New** → **Blueprint**.
+3. Select this repository and click **Apply**.
+4. Render creates the web service with the build command (`./build.sh`), start
+   command (`gunicorn KSD.wsgi:application`), Python 3.12 runtime, and env vars
+   (`DEBUG=false`, generated `SECRET_KEY`) already configured.
+
+Deployment takes a few minutes — the dependency install is small because
+TensorFlow is not installed on the server.
+
+Alternatively, create a **Web Service** manually and set:
+
+| Setting | Value |
+| --- | --- |
+| Runtime | Python 3 (reads `runtime.txt` → 3.12.10) |
+| Build command | `./build.sh` |
+| Start command | `gunicorn KSD.wsgi:application --timeout 120 --workers 1` |
+| Plan | Free (512 MB RAM is enough — prediction peaks ~130 MB) |
+| Env vars | `DEBUG=false`, `SECRET_KEY` (generate) |
+
+`ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS` accept any `*.onrender.com` subdomain, so
+no changes are needed after Render assigns the URL.
 
 ## Project structure
 

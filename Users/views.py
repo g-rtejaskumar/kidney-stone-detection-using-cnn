@@ -57,11 +57,27 @@ def model_performance(request):
 # ---------------------------------------------------------------------------
 # Prediction
 # ---------------------------------------------------------------------------
-_loaded_model = None
+# The deployed model is a TF-Lite file (kidney_stone_model.tflite) run through the
+# lightweight LiteRT runtime (~18 MB install) instead of full TensorFlow, which
+# keeps memory low enough for Render's free tier. The same Interpreter API is
+# shared by ai-edge-litert, tflite-runtime and TensorFlow, so we try them in turn.
+def _get_interpreter(model_path):
+    try:
+        from ai_edge_litert.interpreter import Interpreter
+    except ImportError:
+        try:
+            from tflite_runtime.interpreter import Interpreter
+        except ImportError:
+            import tensorflow as tf
+            return tf.lite.Interpreter(model_path=model_path)
+    return Interpreter(model_path=model_path)
+
+
+_loaded_interpreter = None
 
 
 def prediction(request):
-    global _loaded_model
+    global _loaded_interpreter
 
     context = {}
 
@@ -92,25 +108,31 @@ def prediction(request):
         )
 
         try:
-            if _loaded_model is None:
-                # Lazy import + load: TensorFlow is only brought into memory
-                # the first time someone actually runs a prediction.
-                import tensorflow as tf
-                model_path = os.path.join(settings.BASE_DIR, 'kidney_stone_model.h5')
+            if _loaded_interpreter is None:
+                model_path = os.path.join(settings.BASE_DIR, 'kidney_stone_model.tflite')
                 if not os.path.exists(model_path):
                     context['error'] = 'Model file not found on the server.'
                     return render(request, 'prediction.html', context)
-                _loaded_model = tf.keras.models.load_model(model_path)
+                _loaded_interpreter = _get_interpreter(model_path)
+                _loaded_interpreter.allocate_tensors()
 
-            from tensorflow.keras.preprocessing import image
             import numpy as np
+            from PIL import Image as PILImage
 
-            # Keras 3 only accepts paths or BytesIO, not Django upload objects.
-            img = image.load_img(io.BytesIO(img_bytes), target_size=(224, 224))
-            img_array = image.img_to_array(img)
-            img_array = np.expand_dims(img_array, axis=0) / 255.0
+            # Preprocess with PIL/numpy only (no TensorFlow import needed) so the
+            # server stays light. Matches training-time preprocessing: RGB, resized
+            # to 224x224 (nearest), scaled to [0, 1].
+            pil_img = PILImage.open(io.BytesIO(img_bytes)).convert('RGB')
+            pil_img = pil_img.resize((224, 224), PILImage.Resampling.NEAREST)
+            img_array = np.asarray(pil_img, dtype='float32') / 255.0
+            img_array = np.expand_dims(img_array, axis=0)
 
-            prob = float(_loaded_model.predict(img_array, verbose=0)[0][0])
+            interpreter = _loaded_interpreter
+            input_details = interpreter.get_input_details()[0]
+            output_details = interpreter.get_output_details()[0]
+            interpreter.set_tensor(input_details['index'], img_array)
+            interpreter.invoke()
+            prob = float(interpreter.get_tensor(output_details['index'])[0][0])
 
             stone = prob > 0.5
             context['result'] = 'Kidney stone detected' if stone else 'No kidney stone detected'
