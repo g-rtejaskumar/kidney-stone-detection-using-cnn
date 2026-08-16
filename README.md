@@ -20,6 +20,8 @@ Live demo deployed on Render: `https://kidney-stone-detection-l1n2.onrender.com`
 
 ## Screenshots
 
+### Desktop
+
 | Home | Prediction console |
 | :---: | :---: |
 | ![Home](screenshots/home.png) | ![Prediction](screenshots/prediction.png) |
@@ -27,6 +29,16 @@ Live demo deployed on Render: `https://kidney-stone-detection-l1n2.onrender.com`
 | Training console | Model performance |
 | :---: | :---: |
 | ![Training](screenshots/training.png) | ![Performance](screenshots/performance.png) |
+
+### Mobile
+
+| Home | Prediction |
+| :---: | :---: |
+| ![Home mobile](screenshots/mobile_home.png) | ![Prediction mobile](screenshots/mobile_predict.png) |
+
+| Training | Model performance |
+| :---: | :---: |
+| ![Training mobile](screenshots/mobile_train.png) | ![Performance mobile](screenshots/mobile_perf.png) |
 
 ## Stack
 
