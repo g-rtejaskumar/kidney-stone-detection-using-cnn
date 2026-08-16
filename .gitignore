@@ -19,3 +19,10 @@ KSD.zip
 
 # Generated static files (created by collectstatic)
 staticfiles/
+
+# Local database (recreated by `python manage.py migrate`)
+db.sqlite3
+
+# Working dataset folders
+media/archive (2)/
+temp_images/
